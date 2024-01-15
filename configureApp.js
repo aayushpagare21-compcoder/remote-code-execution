@@ -6,8 +6,8 @@ const setUpExpress = ({ port, environment, logger }) => {
   const app = express()
 
   const errorHandler = require('./middlewares/error.middleware')
-  
-  const coreRoutes = require('./routes/v1/core.routes') 
+
+  const coreRoutes = require('./routes/v1/core.routes')
   app.use('/api/v1', coreRoutes)
 
   app.use(errorHandler)
