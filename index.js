@@ -5,7 +5,7 @@ const logger = require('./config/winston/index.js')
 const cluster = require('cluster')
 const os = require('os')
 
-const setUpExpress = require('./config/configureApp.js')
+const setUpExpress = require('./configureApp.js')
 const cores = os.cpus().length
 
 //If master process, then code for load balancers, start more node instances
