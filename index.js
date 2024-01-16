@@ -1,27 +1,20 @@
-const { PORT, NODE_ENV } = require('./config/dotenv/index.js')
+const { SERVERS } = require('./config/dotenv/index.js')
 const logger = require('./config/winston/index.js')
 
-//Building a node cluster for parelleism
-const cluster = require('cluster')
-const os = require('os')
+//Building a node cluster 
+const cluster = require('node:cluster')
+cluster.setupPrimary({
+  exec: 'app.js',
+})
 
-const setUpExpress = require('./configureApp.js')
-const cores = os.cpus().length
+logger.info(`Load balancer with ${process.pid} is running`)
 
-//If master process, then code for load balancers, start more node instances
-if (cluster.isMaster) {
-  logger.info(`Master process with ${process.pid} is running`)
-
-  for (let i = 0; i < cores; i++) {
-    cluster.fork()
-  }
-
-  //If any server dies the restart it
-  cluster.on('exit', (worker) => {
-    logger.warn(`Worker process ${worker.process.pid} died. Restarting...`)
-    cluster.fork()
-  })
-} else {
-  //If not master process, then code for node servers
-  setUpExpress({ port: PORT, environment: NODE_ENV, logger: logger })
+for (let i = 0; i < SERVERS; i++) {
+  cluster.fork()
 }
+
+//If any server dies the restart it
+cluster.on('exit', (worker) => {
+  logger.warn(`Server with ${worker.process.pid} died. Restarting...`)
+  cluster.fork()
+})
