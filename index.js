@@ -1,4 +1,4 @@
-const { SERVERS } = require('./config/dotenv/index.js')
+const { SERVERS } = require('./config/dotenv')
 const logger = require('./config/winston/index.js')
 
 //Building a node cluster 
