@@ -42,4 +42,6 @@ module.exports = {
    * @type {string}
    */
   SERVERS: process.env.SERVERS,
+
+  //TODO: Add rabbit mq env vars
 }

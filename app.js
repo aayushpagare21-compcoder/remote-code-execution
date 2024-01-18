@@ -1,7 +1,16 @@
 const express = require('express')
 const { PORT, NODE_ENV } = require('./config/dotenv')
 const logger = require('./config/winston')
+const rabbitmq = require('./utils/RabbitMQ')
 const app = express()
+
+const rabbitmqUtils = new RabbitMQUtils({
+  hostname: 'your-rabbitmq-hostname',
+  port: 'your-rabbitmq-port',
+  username: 'your-rabbitmq-username',
+  password: 'your-rabbitmq-password',
+  queueName: 'your-queue-name',
+})
 
 // Middleware for handling errors
 const errorHandler = require('./middlewares/error.middleware')
