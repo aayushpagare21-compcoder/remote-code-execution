@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index",
-    "prettier": "npx prettier --write ."
+    "prettier": "npx prettier --write .",
+    "dev": "nodemon index",
+    "start-services": "docker compose up -d"
   },
   "author": "Aayush Pagare",
   "license": "ISC",

@@ -25,7 +25,7 @@ module.exports = {
   /**
    * The port on which the application will listen.
    *
-   * @type {string}
+   * @type {number}
    */
   PORT: process.env.PORT,
 
@@ -37,11 +37,44 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV,
 
   /**
-   * A comma-separated list of servers.
+   * Number of replica of servers.
    *
-   * @type {string}
+   * @type {number}
    */
   SERVERS: process.env.SERVERS,
 
-  //TODO: Add rabbit mq env vars
+  /**
+   * Rabbit MQ host.
+   *
+   * @type {string}
+   */
+  QUEUE_HOST: process.env.QUEUE_HOST,
+
+  /**
+   * Rabbit MQ Port
+   *
+   * @type {number}
+   */
+  QUEUE_PORT: process.env.QUEUE_PORT,
+
+  /**
+   * Rabbit MQ Name
+   *
+   * @type {string}
+   */
+  QUEUE_NAME: process.env.QUEUE_NAME,
+
+  /**
+   * Rabbit MQ Name
+   *
+   * @type {string}
+   */
+  QUEUE_USER_NAME: process.env.QUEUE_USER_NAME,
+
+  /**
+   * Rabbit MQ Password
+   *
+   * @type {string}
+   */
+  QUEUE_USER_PASSWORD: process.env.QUEUE_USER_PASSWORD,
 }
