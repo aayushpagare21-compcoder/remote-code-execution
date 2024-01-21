@@ -9,7 +9,9 @@ const validateRequest = require('../../middlewares/validation.middleware')
 // Create an Express router
 const router = express.Router()
 
-// Define a Joi schema for request validation
+/*
+    - Schema Declarations
+*/
 const executeCodeRequestBodySchema = Joi.object({
   code: Joi.string().required().messages({
     'any.required': 'Code is required.'
@@ -23,6 +25,9 @@ const executeCodeRequestBodySchema = Joi.object({
     })
 });
 
+/*
+    - Route declarations
+*/
 router.post('/execute-code', validateRequest(executeCodeRequestBodySchema), async (req, res, next) => {
   try {
     res.json({message: "Your code is queued, results will be sent to you in few seconds."})
@@ -35,6 +40,9 @@ router.post('/execute-code', validateRequest(executeCodeRequestBodySchema), asyn
 // Export the router for use in other parts of the application
 module.exports = router
 
+/*
+  - JS DOC
+*/
 /**
  * @swagger
  * components:
