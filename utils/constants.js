@@ -1,0 +1,10 @@
+const SUPPORTED_LANGUAGES = {
+  JAVASCRIPT: 'JAVASCRIPT',
+  PYTHON: 'PYTHON',
+  JAVA: 'JAVA',
+  CPP: 'CPP',
+};
+
+module.exports = {
+  SUPPORTED_LANGUAGES,
+}

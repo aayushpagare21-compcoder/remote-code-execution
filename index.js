@@ -1,4 +1,4 @@
-const { SERVERS } = require('./config/dotenv')
+const { SERVERS, NODE_ENV } = require('./config/dotenv')
 const logger = require('./config/winston')
 
 // Building a node cluster
@@ -18,7 +18,9 @@ for (let i = 0; i < SERVERS; i++) {
 }
 
 // If any server dies, restart it
-cluster.on('exit', (worker) => {
-  logger.warn(`Server with ${worker.process.pid} died. Restarting...`)
-  cluster.fork()
-})
+if(NODE_ENV === 'production') {
+  cluster.on('exit', (worker) => {
+    logger.warn(`Server with ${worker.process.pid} died. Restarting...`)
+    cluster.fork()
+  })
+}

@@ -12,6 +12,8 @@ const coreRoutes = require('./routes/v1/core.routes')
 const app = express()
 //bootstrap the application - establish all connections of db, cache-db, queues
 bootstrap()
+//Parse the request to json
+app.use(express.json())
 // Set up routes for version 1 of the API under the '/api/v1' path
 app.use('/api/v1', coreRoutes)
 //Swagger: View api-docs
