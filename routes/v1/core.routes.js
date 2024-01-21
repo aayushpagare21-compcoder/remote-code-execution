@@ -25,7 +25,7 @@ const executeCodeRequestBodySchema = Joi.object({
 
 router.post('/execute-code', validateRequest(executeCodeRequestBodySchema), async (req, res, next) => {
   try {
-    res.json({ack: "Your code is queued, results will be sent to you in few seconds."})
+    res.json({message: "Your code is queued, results will be sent to you in few seconds."})
   } catch (error) {
     // Pass the error to the next middleware for handling
     next(error)
@@ -37,6 +37,42 @@ module.exports = router
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     ExecuteCodeAPIRequestBody:
+ *       type: object
+ *       properties:
+ *         code:
+ *           type: string
+ *           required: true
+ *           description: The source code to run.
+ *         language:
+ *           type: string
+ *           required: true
+ *           description: Programming language in which the source code is written.
+ *           enum:
+ *             - JAVASCRIPT
+ *             - PYTHON
+ *             - JAVA
+ *             - CPP
+
+ *     ExecuteCodeRequestAPISuccessResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: The message content.
+
+ *     ExecuteCodeRequestAPIErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *               description: Error message content.
+
  * /api/v1/execute-code:
  *   post:
  *     summary: Executes client's code on the server.
@@ -46,62 +82,43 @@ module.exports = router
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               code:
- *                 type: string
- *                 required: true
- *                 description: The source code to run.
- *                 example: console.log('Hello World')
- *               language:
- *                 type: string
- *                 required: true
- *                 description: Programming language in which the source code is written.
- *                 enum:
- *                   - JAVASCRIPT
- *                   - PYTHON
- *                   - JAVA
- *                   - CPP
+ *             $ref: '#/components/schemas/ExecuteCodeAPIRequestBody'
+ *           examples:
+ *             example1:
+ *               value:
+ *                 code: console.log('Hello world')
+ *                 language: JAVASCRIPT
  *     responses:
  *       200:
  *         description: Code successfully queued for submission.
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: The Acknowledgement message.
- *                   example: Your code is queued; results will be sent to you in a few seconds.
+ *               $ref: '#/components/schemas/ExecuteCodeRequestAPISuccessResponse'
+ *             example:
+ *               message: Your code is queued, results will be sent to you in a few seconds.
  *       400:
  *         description: Bad Request
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: object
- *                   properties:
- *                     message:
- *                       type: string
- *                       description: Bad request error message.
- *                       enum:
- *                         - Time Limit Exceeded.
- *                       example: Your code took too much time to execute.
+ *               $ref: '#/components/schemas/ExecuteCodeRequestAPIErrorResponse'
+ *             examples:
+ *               example1:
+ *                 value:
+ *                   error:
+ *                     message: Time limit exceeded.
  *       500:
  *         description: Internal Server Error
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: object
- *                   properties:
- *                     message:
- *                       type: string
- *                       description: Internal server error.
- *                       example: Internal server error.
+ *               $ref: '#/components/schemas/ExecuteCodeRequestAPIErrorResponse'
+ *             examples:
+ *               example1:
+ *                 value:
+ *                   error:
+ *                     message: Internal server error
  */
+
+
