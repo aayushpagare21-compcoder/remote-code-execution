@@ -1,6 +1,6 @@
 const express = require('express')
 const swaggerUI = require('swagger-ui-express')
-const swaggerSpec = require('./swagger')
+const swaggerSpec = require('./config/swagger')
 
 const { PORT, NODE_ENV } = require('./config/dotenv')
 const logger = require('./config/winston')
