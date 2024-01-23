@@ -58,14 +58,7 @@ module.exports = {
   QUEUE_PORT: process.env.QUEUE_PORT,
 
   /**
-   * Rabbit MQ Name
-   *
-   * @type {string}
-   */
-  QUEUE_NAME: process.env.QUEUE_NAME,
-
-  /**
-   * Rabbit MQ Name
+   * Rabbit MQ User Name
    *
    * @type {string}
    */

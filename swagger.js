@@ -1,8 +1,8 @@
-const swaggerJsdoc = require('swagger-jsdoc');
-const logger = require('./config/winston');
+const swaggerJsdoc = require('swagger-jsdoc')
+const logger = require('./config/winston')
 
 // Log information about generating the Swagger spec.
-logger.info('generating swagger spec.');
+logger.info('generating swagger spec.')
 
 // Define options for the Swagger specification.
 const options = {
@@ -22,10 +22,10 @@ const options = {
     ],
   },
   apis: ['./routes/v1/*.js'], // Path to the API routes that should be included in the documentation
-};
+}
 
 // Generate the Swagger specification using swagger-jsdoc.
-const swaggerSpec = swaggerJsdoc(options);
+const swaggerSpec = swaggerJsdoc(options)
 
 // Export the generated Swagger specification.
-module.exports = swaggerSpec;
+module.exports = swaggerSpec

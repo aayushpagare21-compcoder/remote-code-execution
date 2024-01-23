@@ -3,8 +3,14 @@ const SUPPORTED_LANGUAGES = {
   PYTHON: 'PYTHON',
   JAVA: 'JAVA',
   CPP: 'CPP',
-};
+}
+
+const TIME_OUT = 5000
+
+const QUEUE_NAME = 'CODE_EXECUTION_QUEUE'
 
 module.exports = {
   SUPPORTED_LANGUAGES,
+  TIME_OUT,
+  QUEUE_NAME,
 }

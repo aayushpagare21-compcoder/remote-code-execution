@@ -6,12 +6,12 @@ const validateRequest = (schema) => {
     const { error } = schema.validate(req.body)
 
     if (error) {
-      throw new ApiError(400, error.details[0].message);
+      throw new ApiError(400, error.details[0].message)
     }
 
     // If validation passes, call next to proceed to the next middleware
-    next();
-  };
-};
+    next()
+  }
+}
 
 module.exports = validateRequest

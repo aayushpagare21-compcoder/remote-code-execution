@@ -4,14 +4,11 @@ const swaggerSpec = require('./swagger')
 
 const { PORT, NODE_ENV } = require('./config/dotenv')
 const logger = require('./config/winston')
-const bootstrap = require('./utils/bootstrap')
 const errorHandler = require('./middlewares/error.middleware')
 const coreRoutes = require('./routes/v1/core.routes')
 
 //Create express app
 const app = express()
-//bootstrap the application - establish all connections of db, cache-db, queues
-bootstrap()
 //Parse the request to json
 app.use(express.json())
 // Set up routes for version 1 of the API under the '/api/v1' path

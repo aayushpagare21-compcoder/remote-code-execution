@@ -1,41 +1,72 @@
 const express = require('express')
-const Joi = require('joi');
+const Joi = require('joi')
 
 const ApiError = require('../../utils/ApiError')
+const {
+  SUPPORTED_LANGUAGES,
+  TIME_OUT,
+  QUEUE_NAME,
+} = require('../../utils/constants')
+
 const logger = require('../../config/winston')
-const { SUPPORTED_LANGUAGES } = require('../../utils/constants')
+const { setUpRabbitMQ, publishMessage } = require('../../config/rabbit-mq')
+
 const validateRequest = require('../../middlewares/validation.middleware')
 
 // Create an Express router
 const router = express.Router()
 
 /*
+   Rabbit-Mq setup
+*/
+let CHANNEL
+setUpRabbitMQ(QUEUE_NAME)
+  .then((channel) => {
+    CHANNEL = channel
+  })
+  .catch((err) => {
+    logger.error(`error setup rabbit-mq ${err}`)
+  })
+
+/*
     - Schema Declarations
 */
 const executeCodeRequestBodySchema = Joi.object({
   code: Joi.string().required().messages({
-    'any.required': 'Code is required.'
+    'any.required': 'Code is required.',
   }),
   language: Joi.string()
     .valid(...Object.values(SUPPORTED_LANGUAGES))
     .required()
     .messages({
       'any.required': 'Programming Language is required.',
-      'any.only': 'Programming Language not supported.'
-    })
-});
+      'any.only': 'Programming Language not supported.',
+    }),
+})
 
 /*
     - Route declarations
 */
-router.post('/execute-code', validateRequest(executeCodeRequestBodySchema), async (req, res, next) => {
-  try {
-    res.json({message: "Your code is queued, results will be sent to you in few seconds."})
-  } catch (error) {
-    // Pass the error to the next middleware for handling
-    next(error)
-  }
-})
+router.post(
+  '/execute-code',
+  validateRequest(executeCodeRequestBodySchema),
+  async (req, res, next) => {
+    try {
+      const requestBody = {
+        ...req.body,
+        timeOut: TIME_OUT,
+      }
+      await publishMessage(CHANNEL, QUEUE_NAME, requestBody)
+      res.json({
+        message:
+          'Your code is queued, results will be sent to you in few seconds.',
+      })
+    } catch (error) {
+      // Pass the error to the next middleware for handling
+      next(error)
+    }
+  },
+)
 
 // Export the router for use in other parts of the application
 module.exports = router
@@ -128,5 +159,3 @@ module.exports = router
  *                   error:
  *                     message: Internal server error
  */
-
-

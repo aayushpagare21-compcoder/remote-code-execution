@@ -18,7 +18,7 @@ for (let i = 0; i < SERVERS; i++) {
 }
 
 // If any server dies, restart it
-if(NODE_ENV === 'production') {
+if (NODE_ENV === 'production') {
   cluster.on('exit', (worker) => {
     logger.warn(`Server with ${worker.process.pid} died. Restarting...`)
     cluster.fork()
