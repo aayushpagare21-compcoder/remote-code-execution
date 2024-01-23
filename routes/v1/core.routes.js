@@ -1,69 +1,26 @@
 const express = require('express')
-const Joi = require('joi')
-
+const { executeCodeRequestBodySchema } = require('../../utils/validatons')
 const ApiError = require('../../utils/ApiError')
-const {
-  SUPPORTED_LANGUAGES,
-  TIME_OUT,
-  QUEUE_NAME,
-} = require('../../utils/constants')
-
-const logger = require('../../config/winston')
-const { setUpRabbitMQ, publishMessage } = require('../../config/rabbit-mq')
-
 const validateRequest = require('../../middlewares/validation.middleware')
+const { executeCode } = require('../../controllers/executeCode.controller')
+const logger = require('../../config/winston')
 
 // Create an Express router
 const router = express.Router()
 
-/*
-   Rabbit-Mq setup
-*/
-let CHANNEL
-setUpRabbitMQ(QUEUE_NAME)
-  .then((channel) => {
-    CHANNEL = channel
-  })
-  .catch((err) => {
-    logger.error(`error setup rabbit-mq ${err}`)
-  })
-
-/*
-    - Schema Declarations
-*/
-const executeCodeRequestBodySchema = Joi.object({
-  code: Joi.string().required().messages({
-    'any.required': 'Code is required.',
-  }),
-  language: Joi.string()
-    .valid(...Object.values(SUPPORTED_LANGUAGES))
-    .required()
-    .messages({
-      'any.required': 'Programming Language is required.',
-      'any.only': 'Programming Language not supported.',
-    }),
-})
-
-/*
-    - Route declarations
-*/
 router.post(
   '/execute-code',
   validateRequest(executeCodeRequestBodySchema),
   async (req, res, next) => {
     try {
-      const requestBody = {
-        ...req.body,
-        timeOut: TIME_OUT,
-      }
-      await publishMessage(CHANNEL, QUEUE_NAME, requestBody)
+      await executeCode(req.body)
       res.json({
         message:
           'Your code is queued, results will be sent to you in few seconds.',
       })
-    } catch (error) {
-      // Pass the error to the next middleware for handling
-      next(error)
+    } catch (err) {
+      logger.error(`${err} - Error in execute code API Call`)
+      next(new ApiError(500, err.message))
     }
   },
 )
@@ -71,91 +28,3 @@ router.post(
 // Export the router for use in other parts of the application
 module.exports = router
 
-/*
-  - JS DOC
-*/
-/**
- * @swagger
- * components:
- *   schemas:
- *     ExecuteCodeAPIRequestBody:
- *       type: object
- *       properties:
- *         code:
- *           type: string
- *           required: true
- *           description: The source code to run.
- *         language:
- *           type: string
- *           required: true
- *           description: Programming language in which the source code is written.
- *           enum:
- *             - JAVASCRIPT
- *             - PYTHON
- *             - JAVA
- *             - CPP
-
- *     ExecuteCodeRequestAPISuccessResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *           description: The message content.
-
- *     ExecuteCodeRequestAPIErrorResponse:
- *       type: object
- *       properties:
- *         error:
- *           type: object
- *           properties:
- *             message:
- *               type: string
- *               description: Error message content.
-
- * /api/v1/execute-code:
- *   post:
- *     summary: Executes client's code on the server.
- *     description: Takes source code and language and returns the result (output displayed in the terminal).
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ExecuteCodeAPIRequestBody'
- *           examples:
- *             example1:
- *               value:
- *                 code: console.log('Hello world')
- *                 language: JAVASCRIPT
- *     responses:
- *       200:
- *         description: Code successfully queued for submission.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ExecuteCodeRequestAPISuccessResponse'
- *             example:
- *               message: Your code is queued, results will be sent to you in a few seconds.
- *       400:
- *         description: Bad Request
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ExecuteCodeRequestAPIErrorResponse'
- *             examples:
- *               example1:
- *                 value:
- *                   error:
- *                     message: Time limit exceeded.
- *       500:
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ExecuteCodeRequestAPIErrorResponse'
- *             examples:
- *               example1:
- *                 value:
- *                   error:
- *                     message: Internal server error
- */
