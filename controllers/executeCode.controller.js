@@ -1,6 +1,7 @@
 const { TIME_OUT, QUEUE_NAME } = require('../utils/constants')
 const { publishMessage, setUpRabbitMQ } = require('../config/rabbit-mq')
 const logger = require('../config/winston')
+const uuid = require('uuid')
 
 
 //Rabbit-MQ setup
@@ -14,7 +15,9 @@ setUpRabbitMQ(QUEUE_NAME)
   })
 
 async function executeCode(requestBody){
-    await publishMessage(CHANNEL, QUEUE_NAME, { ...requestBody, timeOut: TIME_OUT})
+    const uniqueSubmissionId = uuid.v4()
+    await publishMessage(CHANNEL, QUEUE_NAME, { ...requestBody, timeOut: TIME_OUT, id: uniqueSubmissionId})
+    return uniqueSubmissionId
 }
 
 module.exports = {

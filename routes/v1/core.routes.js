@@ -13,10 +13,9 @@ router.post(
   validateRequest(executeCodeRequestBodySchema),
   async (req, res, next) => {
     try {
-      await executeCode(req.body)
+      const submissionId = await executeCode(req.body)
       res.json({
-        message:
-          'Your code is queued, results will be sent to you in few seconds.',
+        id: submissionId
       })
     } catch (err) {
       logger.error(`${err} - Error in execute code API Call`)
