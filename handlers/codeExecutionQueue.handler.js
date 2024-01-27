@@ -15,22 +15,56 @@ const getCompileCommand = (fileName, fileNameWithExtension, language) => {
   switch (language) {
     case SUPPORTED_LANGUAGES.CPP:
       return `g++ ${PATHS['SRC']}/${fileNameWithExtension} -o ${PATHS['OUTPUT']}/${fileName}`
-    case SUPPORTED_LANGUAGES.JAVA:
-      return `javac -d ${PATHS['OUTPUT']} ${fileNameWithExtension}`
+   }
+}
+
+//TODO: specifying timeout while running code
+const getRunCommand = (fileName, fileNameWithExtension, language) => {
+  switch (language) {
+    case SUPPORTED_LANGUAGES.CPP:
+      return `${PATHS['OUTPUT']}/${fileName}`
+    case SUPPORTED_LANGUAGES.JAVASCRIPT:
+      return `node ${PATHS['SRC']}/${fileNameWithExtension}`
+    case SUPPORTED_LANGUAGES.PYTHON:
+      return `python3 ${PATHS['SRC']}/${fileNameWithExtension}`
   }
 }
+
 const isCompiledLanguage = (language) => {
-  return [SUPPORTED_LANGUAGES.CPP, SUPPORTED_LANGUAGES.JAVA].includes(language)
+  return [SUPPORTED_LANGUAGES.CPP].includes(language)
 }
 const compileAndRunCode = async (fileName, fileNameWithExtension, language) => {
   try {
+    /*
+        fileName: 123123123123
+        fileNameWithExtension: 1123123123123123.cpp
+        language: CPP
+     */
     await execSync(getCompileCommand(fileName, fileNameWithExtension, language))
+    return runCode(fileName, fileNameWithExtension, language)
   } catch (err) {
     logger.error(`${err} - in compilation of ${fileNameWithExtension}`)
+    return {
+      err: err
+    }
   }
 }
-//TODO: To be implemented
-const runCode = () => {}
+
+const runCode = async (fileName, fileNameWithExtension, language) => {
+ try{
+   /*
+      fileName: 123123123123
+      fileNameWithExtension: 1123123123123123.exe
+      language: CPP
+    */
+   return execSync(getRunCommand(fileName, fileNameWithExtension, language))
+ }catch(err) {
+   logger.error(`${err} - in run of ${fileName || fileNameWithExtension}`)
+   return {
+     err: err
+   }
+ }
+}
 const executeCodeHandler = async (eventData) => {
   const { id, code, language } = eventData
   try {
@@ -40,7 +74,8 @@ const executeCodeHandler = async (eventData) => {
     //Compile or run code
     const output = isCompiledLanguage(language)
       ? await compileAndRunCode(id, fileNameWithExtension, language)
-      : await runCode(id, language)
+      : await runCode(id, fileNameWithExtension, language)
+    //TODO: STORE IN REDIS
   } catch (err) {
     logger.error(`Error executing code in handler for submission ${id} ${err}`)
   }
