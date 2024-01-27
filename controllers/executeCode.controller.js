@@ -3,6 +3,7 @@ const { publishMessage, setUpRabbitMQ } = require('../config/rabbit-mq')
 const logger = require('../config/winston')
 const uuid = require('uuid')
 
+
 //Rabbit-MQ setup
 let CHANNEL
 setUpRabbitMQ(QUEUE_NAME)

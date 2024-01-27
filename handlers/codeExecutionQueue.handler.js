@@ -60,3 +60,6 @@ setUpRabbitMQ(QUEUE_NAME)
   .catch((err) => {
     logger.error(`Error setting up Rabbit MQ ${err}`)
   })
+
+
+
