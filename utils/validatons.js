@@ -14,5 +14,5 @@ executeCodeRequestBodySchema = Joi.object({
 })
 
 module.exports = {
-  executeCodeRequestBodySchema
+  executeCodeRequestBodySchema,
 }

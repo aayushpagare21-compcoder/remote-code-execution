@@ -60,7 +60,7 @@ async function consume(channel, queueName, callback) {
       if (message) {
         const content = JSON.parse(message.content.toString())
         callback(content)
-        this.channel.ack(message)
+        channel.ack(message)
       }
     })
   } catch (error) {

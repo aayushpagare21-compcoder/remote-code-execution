@@ -20,3 +20,4 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: 'guest' # Default username
       RABBITMQ_DEFAULT_PASS: 'guest' # Default password
+

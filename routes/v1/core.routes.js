@@ -15,7 +15,7 @@ router.post(
     try {
       const submissionId = await executeCode(req.body)
       res.json({
-        id: submissionId
+        id: submissionId,
       })
     } catch (err) {
       logger.error(`${err} - Error in execute code API Call`)
@@ -26,4 +26,3 @@ router.post(
 
 // Export the router for use in other parts of the application
 module.exports = router
-
