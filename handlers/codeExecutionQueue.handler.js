@@ -17,8 +17,6 @@ const getCompileCommand = (fileName, fileNameWithExtension, language) => {
       return `g++ ${PATHS['SRC']}/${fileNameWithExtension} -o ${PATHS['OUTPUT']}/${fileName}`
    }
 }
-
-//TODO: specifying timeout while running code
 const getRunCommand = (fileName, fileNameWithExtension, language) => {
   switch (language) {
     case SUPPORTED_LANGUAGES.CPP:
