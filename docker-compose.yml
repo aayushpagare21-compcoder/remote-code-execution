@@ -1,22 +1,16 @@
-# Docker Compose file version 3
 version: '3'
-
-# Define services (containers) for your application
 services:
-  # Service for RabbitMQ
   rabbitmq:
-    # Use the official RabbitMQ image with management plugin
     image: 'rabbitmq:3.9-management'
-
-    # Container name for easier identification
     container_name: rabbitmq-local
-
-    # Expose ports for RabbitMQ
     ports:
-      - '5672:5672' # RabbitMQ default port
-      - '15672:15672' # RabbitMQ management plugin port
-
-    # Set environment variables for RabbitMQ configuration
+      - '5672:5672'
+      - '15672:15672'
     environment:
-      RABBITMQ_DEFAULT_USER: 'guest' # Default username
-      RABBITMQ_DEFAULT_PASS: 'guest' # Default password
+      RABBITMQ_DEFAULT_USER: 'guest'
+      RABBITMQ_DEFAULT_PASS: 'guest'
+  redis:
+    image: 'redis:latest'
+    container_name: redis-local
+    ports:
+      - '6379:6379'

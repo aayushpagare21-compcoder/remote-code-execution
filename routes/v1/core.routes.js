@@ -1,15 +1,23 @@
-const express = require('express')
-const { executeCodeRequestBodySchema } = require('../../utils/validatons')
-const ApiError = require('../../utils/ApiError')
-const validateRequest = require('../../middlewares/validation.middleware')
-const { executeCode } = require('../../controllers/executeCode.controller')
 const logger = require('../../config/winston')
 
-// Create an Express router
+const {
+  executeCode,
+  getSubmission,
+} = require('../../controllers/executeCode.controller')
+
+const validateRequest = require('../../middlewares/validation.middleware')
+
+const {
+  executeCodeRequestBodySchema,
+  getSubmissionSchema,
+} = require('../../utils/validatons')
+
+const express = require('express')
+
 const router = express.Router()
 
 router.post(
-  '/execute-code',
+  '/submission',
   validateRequest(executeCodeRequestBodySchema),
   async (req, res, next) => {
     try {
@@ -18,12 +26,24 @@ router.post(
         id: submissionId,
       })
     } catch (err) {
-      logger.error(`${err} - Error in execute code API Call`)
-      next(new ApiError(500, err.message))
+      logger.error(`${err.message} - Error in ${req.path}.`)
+      next(err.message)
     }
   },
 )
 
-// Export the router for use in other parts of the application
-module.exports = router
+router.get(
+  '/submission/:submissionId',
+  validateRequest(getSubmissionSchema),
+  async (req, res, next) => {
+    try {
+      const result = await getSubmission(req.params)
+      res.status(200).json(result)
+    } catch (err) {
+      logger.error(`${err.message} - Error in ${req.path}.`)
+      next(err)
+    }
+  },
+)
 
+module.exports = router

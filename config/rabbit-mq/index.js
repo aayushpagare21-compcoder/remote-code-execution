@@ -1,94 +1,76 @@
+const amqp = require('amqplib')
 const {
   QUEUE_HOST,
   QUEUE_PORT,
   QUEUE_USER_NAME,
   QUEUE_USER_PASSWORD,
 } = require('../dotenv')
-const amqp = require('amqplib')
-const logger = require('../winston')
 
-async function connect() {
-  try {
-    return amqp.connect({
+class RabbitMQManager {
+  constructor() {
+    this.channel = null
+    this.connection = null
+  }
+  async connect() {
+    this.connection = await amqp.connect({
       hostname: QUEUE_HOST,
       port: QUEUE_PORT,
       username: QUEUE_USER_NAME,
       password: QUEUE_USER_PASSWORD,
     })
-  } catch (error) {
-    logger.error(`Error connecting to RabbitMQ: ${error.message}`)
-    throw error
-  }
-}
 
-async function createChannel(connection) {
-  try {
-    return connection.createChannel()
-  } catch (error) {
-    logger.error(`Error creating channel: ${error.message}`)
-    throw error
+    return this.connection
   }
-}
-
-async function declareQueue(queueName, channel) {
-  try {
-    return channel.assertQueue(queueName, { durable: true })
-  } catch (error) {
-    logger.error(`Error creating queue: ${error.message}`)
-    throw error
+  async createChannel() {
+    if (this.connection === null) {
+      throw new Error('Connection is required first to create a channel')
+    }
+    this.channel = await this.connection.createChannel()
+    return this.channel
   }
-}
-
-async function publishMessage(channel, queueName, message) {
-  try {
-    return channel.sendToQueue(
+  async declareQueue(queueName) {
+    if (this.channel === null) {
+      throw new Error('Channel is required first to create a queue')
+    }
+    await this.channel.assertQueue(queueName, { durable: true })
+  }
+  async publishMessage(queueName, message) {
+    return this.channel.sendToQueue(
       queueName,
       Buffer.from(JSON.stringify(message)),
       {
         persistent: true,
       },
     )
-  } catch (error) {
-    logger.error(`Error publishing message: ${error.message}`)
-    throw error
   }
-}
-
-async function consume(channel, queueName, callback) {
-  try {
-    return channel.consume(queueName, (message) => {
+  async consume(queueName, callback) {
+    return this.channel.consume(queueName, (message) => {
       if (message) {
         const content = JSON.parse(message.content.toString())
         callback(content)
-        channel.ack(message)
+        this.channel.ack(message)
       }
     })
-  } catch (error) {
-    logger.error(
-      `Error consuming messages from ${queueName} : ${error.message}`,
-    )
-    throw error
+  }
+  async publish(queueName, message) {
+    if (this.connection === null) {
+      await this.connect()
+      await this.createChannel()
+      await this.declareQueue(queueName)
+      await this.publishMessage(queueName, message)
+      return
+    }
+
+    await this.publishMessage(queueName, message)
+  }
+  async listenToQueue(queueName, handler) {
+    if (this.connection === null) {
+      await this.connect()
+      await this.createChannel()
+      await this.declareQueue(queueName)
+      await this.consume(queueName, handler)
+    }
   }
 }
 
-async function close(connection) {
-  try {
-    return connection.close()
-  } catch (error) {
-    logger.error(`Error closing connection: ${error.message}`)
-  }
-}
-
-async function setUpRabbitMQ(queueName) {
-  const connection = await connect()
-  const channel = await createChannel(connection)
-  await declareQueue(queueName, channel)
-
-  return channel
-}
-
-module.exports = {
-  setUpRabbitMQ,
-  publishMessage,
-  consume,
-}
+module.exports = RabbitMQManager

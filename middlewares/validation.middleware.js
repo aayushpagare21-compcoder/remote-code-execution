@@ -1,15 +1,22 @@
-// Validation middleware
 const ApiError = require('../utils/ApiError')
+
+const { pick, keys } = require('lodash')
+const Joi = require('joi')
+
 const validateRequest = (schema) => {
   return (req, res, next) => {
-    // Validate the request body using the provided Joi schema
-    const { error } = schema.validate(req.body)
-
+    const validationSchema = pick(schema, ['body', 'query', 'params'])
+    const object = pick(req, keys(validationSchema))
+    const { error } = Joi.compile(validationSchema)
+      .prefs({ errors: { label: 'key' } })
+      .validate(object)
     if (error) {
-      throw new ApiError(400, error.details[0].message)
-    }
+      const errorMessage = error.details
+        .map((details) => details.message)
+        .join(', ')
 
-    // If validation passes, call next to proceed to the next middleware
+      next(new ApiError(400, errorMessage))
+    }
     next()
   }
 }
