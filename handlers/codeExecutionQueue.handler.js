@@ -13,35 +13,12 @@ const redis = new RedisManager({
   host: REDIS_HOST,
   port: REDIS_PORT,
 })
-
-const getCompileCommand = (fileName, language) => {
-  switch (language) {
-    case SUPPORTED_LANGUAGES.CPP:
-      return `g++ ${PATHS.SRC}/${fileName}${EXTENSIONS.CPP} -o ${PATHS.OUTPUT}/${fileName}`
-  }
-}
 const getRunCommand = (fileName, language) => {
   switch (language) {
-    case SUPPORTED_LANGUAGES.CPP:
-      return `${PATHS.OUTPUT}/${fileName}`
     case SUPPORTED_LANGUAGES.JAVASCRIPT:
       return `node ${PATHS.SRC}/${fileName}`
     case SUPPORTED_LANGUAGES.PYTHON:
-      return `python3 ${PATHS.SRC}/${fileName}`
-  }
-}
-const isCompiledLanguage = (language) => {
-  return [SUPPORTED_LANGUAGES.CPP].includes(language)
-}
-const compileAndRunCode = async (fileName, language) => {
-  try {
-    await execSync(getCompileCommand(fileName, language))
-    return runCode(fileName, language)
-  } catch (err) {
-    logger.error(`${err} - compile - for ${language} - id ${fileName}`)
-    return {
-      err: err.stderr,
-    }
+      return `python3 ${PATHS.SRC}/${fileName}${EXTENSIONS.PYTHON}`
   }
 }
 const runCode = async (fileName, language) => {
@@ -59,14 +36,10 @@ const executeCodeHandler = async (eventData) => {
     const { id, code, language } = eventData
     const fileNameWithExtension = `${id}${EXTENSIONS[language]}`
     const sourceFilePath = `${PATHS.SRC}/${fileNameWithExtension}`
-    const outputFilePath = `${PATHS.OUTPUT}/${fileNameWithExtension}`
-    const isLangCompiled = isCompiledLanguage(language)
     //Create a file and store code in it
     await fs.writeFile(sourceFilePath, code)
-    //Compile or run code
-    const output = isLangCompiled
-      ? await compileAndRunCode(id, language)
-      : await runCode(id, language)
+    //run code
+    const output = await runCode(id, language)
 
     const result = output.err
       ? {
@@ -79,8 +52,6 @@ const executeCodeHandler = async (eventData) => {
     await redis.set(id, result)
     //Delete the source and output file
     await fs.unlink(sourceFilePath)
-    //Delete the output file (if it's a compiled language)
-    isLangCompiled && (await fs.unlink(outputFilePath))
   } catch (err) {
     logger.error(`${err} - Error in code execution queue handle`)
   }

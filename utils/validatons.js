@@ -19,11 +19,9 @@ const executeCodeRequestSchema = {
 
 const getSubmissionSchema = {
   params: Joi.object().keys({
-    submissionId: Joi.string().required().messages(
-      {
-        'any.required': 'Submission Id is required.',
-      }
-    ),
+    submissionId: Joi.string().required().messages({
+      'any.required': 'Submission Id is required.',
+    }),
   }),
 }
 
