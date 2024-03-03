@@ -1,0 +1,25 @@
+const SUPPORTED_LANGUAGES = {
+  JAVASCRIPT: 'JAVASCRIPT',
+  PYTHON: 'PYTHON',
+}
+
+const TIME_OUT = 5000
+
+const QUEUE_NAME = 'CODE_EXECUTION_QUEUE'
+
+const EXTENSIONS = {
+  [SUPPORTED_LANGUAGES.JAVASCRIPT]: '.js',
+  [SUPPORTED_LANGUAGES.PYTHON]: '.py',
+}
+
+const PATHS = {
+  SRC: `${process.cwd()}/files/src`,
+}
+
+module.exports = {
+  SUPPORTED_LANGUAGES,
+  TIME_OUT,
+  QUEUE_NAME,
+  EXTENSIONS,
+  PATHS,
+}
