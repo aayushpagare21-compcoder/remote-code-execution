@@ -1,9 +1,9 @@
-const { REDIS_HOST, REDIS_PORT, QUEUE_NAME } = require('./libs/envIntegration')
+const { REDIS_HOST, REDIS_PORT } = require('./libs/envIntegration')
 const RedisManager = require('./libs/cacheIntegration')
 const logger = require('./libs/loggerIntegration') 
 const RabbitMQManager = require('./libs/queueIntegration')
 
-const { SUPPORTED_LANGUAGES, EXTENSIONS, PATHS } = require('./libs/utils/constants')
+const { SUPPORTED_LANGUAGES, EXTENSIONS, PATHS, QUEUE_NAME } = require('./libs/utils/constants')
 
 const fs = require('fs/promises')
 const { exec } = require('child_process')
