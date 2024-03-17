@@ -3,17 +3,59 @@ services:
   rabbitmq:
     image: 'rabbitmq:3.9-management'
     container_name: rabbitmq-local
+    networks:
+      - codex-network
     ports:
       - '5672:5672'
       - '15672:15672'
   redis:
     image: 'redis/redis-stack:latest'
     container_name: redis-local
+    networks:
+      - codex-network
     ports:
       - '6379:6379'
       - '8001:8001'
   server:
-    image: server:03 
-    container_name: server 
+    image: server:latest
+    container_name: server
+    restart: always
     ports: 
       - '3000:3000'
+    networks:
+      - codex-network
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      QUEUE_HOST: rabbitmq-local
+      QUEUE_PORT: 5672
+      QUEUE_USER_NAME: guest
+      QUEUE_USER_PASSWORD: guest
+      REDIS_HOST: redis-local
+      REDIS_PORT: 6379
+      CACHE_EXPIRY_SECONDS: 10000
+    depends_on:
+      - rabbitmq
+      - redis
+  worker:
+    image: workers:latest
+    container_name: workers
+    restart: always
+    networks:
+      - codex-network
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      QUEUE_HOST: rabbitmq-local
+      QUEUE_PORT: 5672
+      QUEUE_USER_NAME: guest
+      QUEUE_USER_PASSWORD: guest
+      REDIS_HOST: redis-local
+      REDIS_PORT: 6379
+      CACHE_EXPIRY_SECONDS: 10000
+    depends_on:
+      - rabbitmq
+      - redis
+networks:
+  codex-network:
+    driver: bridge

@@ -10,4 +10,4 @@ RUN yarn install
 
 COPY . . 
 
-CMD [ "node", "workers/app.js" ]
+CMD [ "node", "app.js" ]

@@ -10,7 +10,11 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 app.use('/api/v1', coreRoutes)
+app.get('/', (req, res) => {
+  res.send('Endpoint test successfully completed.')
+})
+
 app.use(errorHandler)
-app.listen(PORT || 3001, () => {
-  logger.info(`Node ${NODE_ENV} server running at port ${PORT || 3001}`)
+app.listen(PORT, () => {
+  logger.info(`Node ${NODE_ENV} server running at port ${PORT}`)
 })
