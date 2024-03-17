@@ -60,7 +60,7 @@ class RabbitMQManager {
       await this.publishMessage(queueName, message)
       return
     }
-   
+
     await this.publishMessage(queueName, message)
   }
   async listenToQueue(queueName, handler) {
@@ -69,7 +69,7 @@ class RabbitMQManager {
       await this.createChannel()
       await this.declareQueue(queueName)
       await this.consume(queueName, handler)
-    } 
+    }
   }
 }
 

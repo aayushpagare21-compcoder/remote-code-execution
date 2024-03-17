@@ -1,4 +1,5 @@
 const redis = require('redis')
+const logger = require('../loggerIntegration')
 class RedisManager {
   constructor(config) {
     this.config = config
@@ -6,7 +7,9 @@ class RedisManager {
   }
   async connect() {
     if (!this.client) {
-      this.client = await redis.createClient(this.config)
+      this.client = await redis.createClient({
+        url: `redis://${this.config.host}:${this.config.port}`,
+      })
       await this.client.connect()
     }
   }

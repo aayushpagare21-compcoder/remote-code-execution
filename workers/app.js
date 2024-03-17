@@ -1,9 +1,14 @@
-const { REDIS_HOST, REDIS_PORT } = require('./libs/envIntegration')
+const { REDIS_HOST, REDIS_PORT, QUEUE_HOST } = require('./libs/envIntegration')
 const RedisManager = require('./libs/cacheIntegration')
-const logger = require('./libs/loggerIntegration') 
+const logger = require('./libs/loggerIntegration')
 const RabbitMQManager = require('./libs/queueIntegration')
 
-const { SUPPORTED_LANGUAGES, EXTENSIONS, PATHS, QUEUE_NAME } = require('./libs/utils/constants')
+const {
+  SUPPORTED_LANGUAGES,
+  EXTENSIONS,
+  PATHS,
+  QUEUE_NAME,
+} = require('./libs/utils/constants')
 
 const fs = require('fs/promises')
 const { exec } = require('child_process')
@@ -50,13 +55,13 @@ const executeCodeHandler = async (eventData) => {
           output: output.stdout,
         }
     //set results in redis
-    await redis.set(`submissions:${id}`, result, 60) 
+    await redis.set(`submissions:${id}`, result, 60)
     //Delete the source and output file
     await fs.unlink(sourceFilePath)
   } catch (err) {
     logger.error(`${err} - Error in code execution queue handle`)
   }
-} 
+}
 
 const rabbitMQ = new RabbitMQManager()
 rabbitMQ
