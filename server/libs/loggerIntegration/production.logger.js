@@ -7,7 +7,7 @@ const productionLogger = () => {
       winston.format.timestamp(),
       winston.format.json(),
     ),
-    transports: [new winston.transports.File({ filename: 'production.log' })],
+    transports: [new winston.transports.File({ filename: 'production.log' }), new winston.transports.Console()],
   })
 }
 
