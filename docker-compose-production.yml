@@ -24,10 +24,10 @@ services:
     container_name: server
     restart: always
     ports:
-      - "3000:3000"
+      - "80:80"
     environment:
       NODE_ENV: production
-      PORT: 3000
+      PORT: 80
       QUEUE_HOST: rabbitmq
       QUEUE_PORT: 5672
       QUEUE_USER_NAME: guest
