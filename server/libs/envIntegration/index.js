@@ -11,4 +11,5 @@ module.exports = {
   QUEUE_USER_PASSWORD: process.env.QUEUE_USER_PASSWORD,
   REDIS_PORT: process.env.REDIS_PORT,
   REDIS_HOST: process.env.REDIS_HOST,
+  CACHE_EXPIRY_SECONDS: process.env.CACHE_EXPIRY_SECONDS
 }

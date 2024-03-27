@@ -1,4 +1,4 @@
-const { REDIS_HOST, REDIS_PORT, QUEUE_HOST } = require('./libs/envIntegration')
+const { REDIS_HOST, REDIS_PORT, CACHE_EXPIRY_SECONDS } = require('./libs/envIntegration')
 const RedisManager = require('./libs/cacheIntegration')
 const logger = require('./libs/loggerIntegration')
 const RabbitMQManager = require('./libs/queueIntegration')
@@ -55,7 +55,7 @@ const executeCodeHandler = async (eventData) => {
           output: output.stdout,
         }
     //set results in redis
-    await redis.set(`submissions:${id}`, result, 60)
+    await redis.set(`submissions:${id}`, result, CACHE_EXPIRY_SECONDS)
     //Delete the source and output file
     await fs.unlink(sourceFilePath)
   } catch (err) {
