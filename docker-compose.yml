@@ -48,4 +48,5 @@ services:
       - rabbitmq
       - redis
     pids_limit: 40
+    cpus: 0.5
     mem_limit: 300M
