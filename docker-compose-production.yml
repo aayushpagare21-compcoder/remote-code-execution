@@ -59,9 +59,8 @@ services:
       - redis
     networks:
       - codex-network
-    pids_limit: 60 # Max number of processes running in thw container.
-    cpus: 1 # No of CPUs allocated
-    mem_limit: 150M # Hard limit
+    pids_limit: 40
+    mem_limit: 300M
 
 networks:
   codex-network:
